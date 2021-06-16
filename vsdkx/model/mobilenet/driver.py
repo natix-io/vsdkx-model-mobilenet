@@ -106,7 +106,7 @@ class MobilenetDriver(ModelDriver):
 
         if len(keep_idxs) > 0:
             # Filter nms results
-            if len(self._filter_classes > 0):
+            if len(self._filter_classes) > 0:
                 boxes, scores, labels = self._filter_nms(keep_idxs, boxes,
                                                     scores, labels)
         else:
