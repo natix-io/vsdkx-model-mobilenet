@@ -53,11 +53,6 @@ class MobilenetDriver(ModelDriver):
             load_tflite(model_config['model_path'])
         self._iou_thresh = model_settings['iou_thresh']
         self._conf_thresh = model_settings['conf_thresh']
-        self._target_shape = model_settings['target_shape']
-        self._text_thickness = drawing_config['text_thickness']
-        self._text_fontscale = drawing_config['text_fontscale']
-        self._text_color = drawing_config['text_color']
-        self._rectangle_color = drawing_config['rectangle_color']
 
     def inference(
             self,
@@ -74,12 +69,14 @@ class MobilenetDriver(ModelDriver):
         """
 
         image_resized = cv2.resize(image,
-                                   (self._input_shape[0], self._input_shape[1]))
+                                   (
+                                   self._input_shape[0], self._input_shape[1]))
         image_np = (2.0 / 255.0) * image_resized - 1.0
         image_exp = np.expand_dims(image_np, axis=0)
         image_exp = tf.cast(image_exp, dtype=tf.uint8)
         # Set img_in as tensor in the model's input_details
-        self._interpreter.set_tensor(self._input_details[0]['index'], image_exp)
+        self._interpreter.set_tensor(self._input_details[0]['index'],
+                                     image_exp)
         self._interpreter.invoke()
 
         # Get the output_details tensors (based on the given input above)
@@ -108,7 +105,8 @@ class MobilenetDriver(ModelDriver):
             # Filter nms results
             if len(self._filter_classes) > 0:
                 boxes, scores, labels = self._filter_nms(keep_idxs, boxes,
-                                                    scores, labels)
+                                                         scores, labels,
+                                                         image.shape)
         else:
             boxes, scores, labels = [], [], []
 
@@ -138,7 +136,7 @@ class MobilenetDriver(ModelDriver):
 
         return new_b
 
-    def _filter_nms(self, ids, boxes, scores, labels):
+    def _filter_nms(self, ids, boxes, scores, labels, target_shape):
         """
         Filters the bounding boxes and scores by ID
 
@@ -162,12 +160,10 @@ class MobilenetDriver(ModelDriver):
             # Filter boxes by person class ID
             if labels[id] in self._filter_classes:
                 box = box_sanity_check(boxes[id],
-                                       self._target_shape[1],
-                                       self._target_shape[0])
+                                       target_shape[1],
+                                       target_shape[0])
                 filtered_boxes.append(box)
                 filtered_scores.append(scores[id])
                 filtered_labels.append(labels[id])
 
         return filtered_boxes, filtered_scores, filtered_labels
-
-
