@@ -1,7 +1,7 @@
 ### Model Settings
 ```yaml
-iou_thresh:
-conf_thresh:
+iou_thresh: 0.4, # Float Intersection of Union threshold
+conf_thresh: 0.5, # Float class confidence threshold
 ```
 
 
