@@ -14,7 +14,7 @@ setup(
         'vsdkx-core',
         'opencv-python~=4.2.0.34',
         'numpy==1.18.5',
-        'tensorflow==2.3.1',
+        'tensorflow==2.3.4',
     ],
     version='1.0',
 )
