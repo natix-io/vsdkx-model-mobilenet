@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from vsdkx.core.interfaces import ModelDriver
-from vsdkx.core.structs import Inference
+from vsdkx.core.structs import Inference, FrameObject
 from vsdkx.core.util.model import load_tflite, box_sanity_check
 
 
@@ -56,18 +56,18 @@ class MobilenetDriver(ModelDriver):
 
     def inference(
             self,
-            image
+            frame_object: FrameObject
     ) -> Inference:
         """
         Driver function for object detection inference
 
         Args:
-            image (np.array): 3D numpy array of input image
+            frame_object (FrameObject): Frame Object
 
         Returns:
             (Inference): the result of the ai
         """
-
+        image = frame_object.frame
         image_resized = cv2.resize(image,
                                    (
                                    self._input_shape[0], self._input_shape[1]))
